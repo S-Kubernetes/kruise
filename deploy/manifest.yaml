@@ -1870,7 +1870,7 @@ spec:
             - --logtostderr=true
             - --leader-election-namespace=kruise-system
             - --v=4
-            - --feature-gates=
+            - --feature-gates=CloneSetShortHash=true,CloneSetPartitionRollback=true
           command:
             - /manager
           image: openkruise/kruise-manager:v0.10.1
