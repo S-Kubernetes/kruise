@@ -389,6 +389,787 @@ status:
   conditions: []
   storedVersions: []
 ---
+# Source: kruise/templates/apps.kruise.io_broadcastjobs.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.9
+  creationTimestamp: null
+  name: broadcastjobs.apps.kruise.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.desired
+    description: The desired number of pods. This is typically equal to the number of nodes satisfied to run pods.
+    name: Desired
+    type: integer
+  - JSONPath: .status.active
+    description: The number of actively running pods.
+    name: Active
+    type: integer
+  - JSONPath: .status.succeeded
+    description: The number of pods which reached phase Succeeded.
+    name: Succeeded
+    type: integer
+  - JSONPath: .status.failed
+    description: The number of pods which reached phase Failed.
+    name: Failed
+    type: integer
+  - JSONPath: .metadata.creationTimestamp
+    description: CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+    name: AGE
+    type: date
+  group: apps.kruise.io
+  names:
+    kind: BroadcastJob
+    listKind: BroadcastJobList
+    plural: broadcastjobs
+    shortNames:
+    - bcj
+    singular: broadcastjob
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: BroadcastJob is the Schema for the broadcastjobs API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: BroadcastJobSpec defines the desired state of BroadcastJob
+          properties:
+            completionPolicy:
+              description: CompletionPolicy indicates the completion policy of the job. Default is Always CompletionPolicyType
+              properties:
+                activeDeadlineSeconds:
+                  description: ActiveDeadlineSeconds specifies the duration in seconds relative to the startTime that the job may be active before the system tries to terminate it; value must be positive integer. Only works for Always type.
+                  format: int64
+                  type: integer
+                ttlSecondsAfterFinished:
+                  description: ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted. When the Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, the Job won't be automatically deleted. If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes. This field is alpha-level and is only honored by servers that enable the TTLAfterFinished feature. Only works for Always type
+                  format: int32
+                  type: integer
+                type:
+                  description: Type indicates the type of the CompletionPolicy Default is Always
+                  type: string
+              type: object
+            failurePolicy:
+              description: FailurePolicy indicates the behavior of the job, when failed pod is found.
+              properties:
+                restartLimit:
+                  description: RestartLimit specifies the number of retries before marking the pod failed.
+                  format: int32
+                  type: integer
+                type:
+                  description: Type indicates the type of FailurePolicyType.
+                  type: string
+              type: object
+            parallelism:
+              anyOf:
+              - type: integer
+              - type: string
+              description: Parallelism specifies the maximum desired number of pods the job should run at any given time. The actual number of pods running in steady state will be less than this number when the work left to do is less than max parallelism. Not setting this value means no limit.
+              x-kubernetes-int-or-string: true
+            paused:
+              description: Paused will pause the job.
+              type: boolean
+            template:
+              description: Template describes the pod that will be created when executing a job.
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+          required:
+          - template
+          type: object
+        status:
+          description: BroadcastJobStatus defines the observed state of BroadcastJob
+          properties:
+            active:
+              description: The number of actively running pods.
+              format: int32
+              type: integer
+            completionTime:
+              description: Represents time when the job was completed. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+              format: date-time
+              type: string
+            conditions:
+              description: The latest available observations of an object's current state.
+              items:
+                description: JobCondition describes current state of a job.
+                properties:
+                  lastProbeTime:
+                    description: Last time the condition was checked.
+                    format: date-time
+                    type: string
+                  lastTransitionTime:
+                    description: Last time the condition transit from one status to another.
+                    format: date-time
+                    type: string
+                  message:
+                    description: Human readable message indicating details about last transition.
+                    type: string
+                  reason:
+                    description: (brief) reason for the condition's last transition.
+                    type: string
+                  status:
+                    description: Status of the condition, one of True, False, Unknown.
+                    type: string
+                  type:
+                    description: Type of job condition, Complete or Failed.
+                    type: string
+                required:
+                - status
+                - type
+                type: object
+              type: array
+            desired:
+              description: The desired number of pods, this is typically equal to the number of nodes satisfied to run pods.
+              format: int32
+              type: integer
+            failed:
+              description: The number of pods which reached phase Failed.
+              format: int32
+              type: integer
+            phase:
+              description: The phase of the job.
+              type: string
+            startTime:
+              description: Represents time when the job was acknowledged by the job controller. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+              format: date-time
+              type: string
+            succeeded:
+              description: The number of pods which reached phase Succeeded.
+              format: int32
+              type: integer
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+# Source: kruise/templates/apps.kruise.io_imagepulljobs.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.9
+  creationTimestamp: null
+  name: imagepulljobs.apps.kruise.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.desired
+    description: Number of all nodes matched by this job
+    name: TOTAL
+    type: integer
+  - JSONPath: .status.active
+    description: Number of image pull task active
+    name: ACTIVE
+    type: integer
+  - JSONPath: .status.succeeded
+    description: Number of image pull task succeeded
+    name: SUCCEED
+    type: integer
+  - JSONPath: .status.failed
+    description: Number of image pull tasks failed
+    name: FAILED
+    type: integer
+  - JSONPath: .metadata.creationTimestamp
+    description: CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+    name: AGE
+    type: date
+  - JSONPath: .status.message
+    description: Summary of status when job is failed
+    name: MESSAGE
+    type: string
+  group: apps.kruise.io
+  names:
+    kind: ImagePullJob
+    listKind: ImagePullJobList
+    plural: imagepulljobs
+    singular: imagepulljob
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: ImagePullJob is the Schema for the imagepulljobs API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: ImagePullJobSpec defines the desired state of ImagePullJob
+          properties:
+            completionPolicy:
+              description: CompletionPolicy indicates the completion policy of the job. Default is Always CompletionPolicyType.
+              properties:
+                activeDeadlineSeconds:
+                  description: ActiveDeadlineSeconds specifies the duration in seconds relative to the startTime that the job may be active before the system tries to terminate it; value must be positive integer. Only works for Always type.
+                  format: int64
+                  type: integer
+                ttlSecondsAfterFinished:
+                  description: ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted. When the Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, the Job won't be automatically deleted. If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes. This field is alpha-level and is only honored by servers that enable the TTLAfterFinished feature. Only works for Always type
+                  format: int32
+                  type: integer
+                type:
+                  description: Type indicates the type of the CompletionPolicy Default is Always
+                  type: string
+              type: object
+            image:
+              description: Image is the image to be pulled by the job
+              type: string
+            parallelism:
+              anyOf:
+              - type: integer
+              - type: string
+              description: Parallelism is the requested parallelism, it can be set to any non-negative value. If it is unspecified, it defaults to 1. If it is specified as 0, then the Job is effectively paused until it is increased.
+              x-kubernetes-int-or-string: true
+            podSelector:
+              description: PodSelector is a query over pods that should pull image on nodes of these pods. Mutually exclusive with Selector.
+              properties:
+                matchExpressions:
+                  description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
+                  items:
+                    description: A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+                    properties:
+                      key:
+                        description: key is the label key that the selector applies to.
+                        type: string
+                      operator:
+                        description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+                        type: string
+                      values:
+                        description: values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - key
+                    - operator
+                    type: object
+                  type: array
+                matchLabels:
+                  additionalProperties:
+                    type: string
+                  description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+                  type: object
+              type: object
+            pullPolicy:
+              description: PullPolicy is an optional field to set parameters of the pulling task. If not specified, the system will use the default values.
+              properties:
+                backoffLimit:
+                  description: Specifies the number of retries before marking the pulling task failed. Defaults to 3
+                  format: int32
+                  type: integer
+                timeoutSeconds:
+                  description: Specifies the timeout of the pulling task. Defaults to 600
+                  format: int32
+                  type: integer
+              type: object
+            pullSecrets:
+              description: ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling the image. If specified, these secrets will be passed to individual puller implementations for them to use.  For example, in the case of docker, only DockerConfig type secrets are honored.
+              items:
+                type: string
+              type: array
+            selector:
+              description: Selector is a query over nodes that should match the job. nil to match all nodes.
+              properties:
+                matchExpressions:
+                  description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
+                  items:
+                    description: A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+                    properties:
+                      key:
+                        description: key is the label key that the selector applies to.
+                        type: string
+                      operator:
+                        description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+                        type: string
+                      values:
+                        description: values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - key
+                    - operator
+                    type: object
+                  type: array
+                matchLabels:
+                  additionalProperties:
+                    type: string
+                  description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+                  type: object
+                names:
+                  description: Names specify a set of nodes to execute the job.
+                  items:
+                    type: string
+                  type: array
+              type: object
+          required:
+          - completionPolicy
+          - image
+          type: object
+        status:
+          description: ImagePullJobStatus defines the observed state of ImagePullJob
+          properties:
+            active:
+              description: The number of actively running pulling tasks.
+              format: int32
+              type: integer
+            completionTime:
+              description: Represents time when the job was completed. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+              format: date-time
+              type: string
+            desired:
+              description: The desired number of pulling tasks, this is typically equal to the number of nodes satisfied.
+              format: int32
+              type: integer
+            failed:
+              description: The number of pulling tasks  which reached phase Failed.
+              format: int32
+              type: integer
+            failedNodes:
+              description: The nodes that failed to pull the image.
+              items:
+                type: string
+              type: array
+            message:
+              description: The text prompt for job running status.
+              type: string
+            startTime:
+              description: Represents time when the job was acknowledged by the job controller. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+              format: date-time
+              type: string
+            succeeded:
+              description: The number of pulling tasks which reached phase Succeeded.
+              format: int32
+              type: integer
+          required:
+          - desired
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+# Source: kruise/templates/apps.kruise.io_containerrecreaterequests.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.9
+  creationTimestamp: null
+  name: containerrecreaterequests.apps.kruise.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.phase
+    description: Phase of this ContainerRecreateRequest.
+    name: PHASE
+    type: string
+  - JSONPath: .spec.podName
+    description: Pod name of this ContainerRecreateRequest.
+    name: POD
+    type: string
+  - JSONPath: .metadata.labels.crr\.apps\.kruise\.io/node-name
+    description: Pod name of this ContainerRecreateRequest.
+    name: NODE
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    description: CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+    name: AGE
+    type: date
+  group: apps.kruise.io
+  names:
+    kind: ContainerRecreateRequest
+    listKind: ContainerRecreateRequestList
+    plural: containerrecreaterequests
+    shortNames:
+    - crr
+    singular: containerrecreaterequest
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: ContainerRecreateRequest is the Schema for the containerrecreaterequests API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: ContainerRecreateRequestSpec defines the desired state of ContainerRecreateRequest
+          properties:
+            activeDeadlineSeconds:
+              description: ActiveDeadlineSeconds is the deadline duration of this ContainerRecreateRequest.
+              format: int64
+              type: integer
+            containers:
+              description: Containers contains the containers that need to recreate in the Pod.
+              items:
+                description: ContainerRecreateRequestContainer defines the container that need to recreate.
+                properties:
+                  name:
+                    description: Name of the container that need to recreate. It must be existing in the real pod.Spec.Containers.
+                    type: string
+                  ports:
+                    description: Ports is synced from the real container in Pod spec during this ContainerRecreateRequest creating. Populated by the system. Read-only.
+                    items:
+                      description: ContainerPort represents a network port in a single container.
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    type: array
+                  preStop:
+                    description: PreStop is synced from the real container in Pod spec during this ContainerRecreateRequest creating. Populated by the system. Read-only.
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  statusContext:
+                    description: StatusContext is synced from the real Pod status during this ContainerRecreateRequest creating. Populated by the system. Read-only.
+                    properties:
+                      containerID:
+                        description: Container's ID in the format 'docker://<container_id>'.
+                        type: string
+                      restartCount:
+                        description: The number of times the container has been restarted, currently based on the number of dead containers that have not yet been removed. Note that this is calculated from dead containers. But those containers are subject to garbage collection. This value will get capped at 5 by GC.
+                        format: int32
+                        type: integer
+                    required:
+                    - containerID
+                    - restartCount
+                    type: object
+                required:
+                - name
+                type: object
+              type: array
+            podName:
+              description: PodName is name of the Pod that owns the recreated containers.
+              type: string
+            strategy:
+              description: Strategy defines strategies for containers recreation.
+              properties:
+                failurePolicy:
+                  description: FailurePolicy decides whether to continue if one container fails to recreate
+                  type: string
+                minStartedSeconds:
+                  description: Minimum number of seconds for which a newly created container should be started and ready without any of its container crashing, for it to be considered Succeeded. Defaults to 0 (container will be considered Succeeded as soon as it is started and ready)
+                  format: int32
+                  type: integer
+                orderedRecreate:
+                  description: OrderedRecreate indicates whether to recreate the next container only if the previous one has recreated completely.
+                  type: boolean
+                terminationGracePeriodSeconds:
+                  description: TerminationGracePeriodSeconds is the optional duration in seconds to wait the container terminating gracefully. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, we will use pod.Spec.TerminationGracePeriodSeconds as default value.
+                  format: int64
+                  type: integer
+                unreadyGracePeriodSeconds:
+                  description: UnreadyGracePeriodSeconds is the optional duration in seconds to mark Pod as not ready over this duration before executing preStop hook and stopping the container.
+                  format: int64
+                  type: integer
+              type: object
+            ttlSecondsAfterFinished:
+              description: TTLSecondsAfterFinished is the TTL duration after this ContainerRecreateRequest has completed.
+              format: int32
+              type: integer
+          required:
+          - containers
+          - podName
+          type: object
+        status:
+          description: ContainerRecreateRequestStatus defines the observed state of ContainerRecreateRequest
+          properties:
+            completionTime:
+              description: Represents time when the ContainerRecreateRequest was completed. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+              format: date-time
+              type: string
+            containerRecreateStates:
+              description: ContainerRecreateStates contains the recreation states of the containers.
+              items:
+                description: ContainerRecreateRequestContainerRecreateState contains the recreation state of the container.
+                properties:
+                  message:
+                    description: A human readable message indicating details about this state.
+                    type: string
+                  name:
+                    description: Name of the container.
+                    type: string
+                  phase:
+                    description: Phase indicates the recreation phase of the container.
+                    type: string
+                required:
+                - name
+                - phase
+                type: object
+              type: array
+            message:
+              description: A human readable message indicating details about this ContainerRecreateRequest.
+              type: string
+            phase:
+              description: Phase of this ContainerRecreateRequest, e.g. Pending, Recreating, Completed
+              type: string
+          required:
+          - phase
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+# Source: kruise/templates/apps.kruise.io_nodeimages.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.9
+  creationTimestamp: null
+  name: nodeimages.apps.kruise.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.desired
+    description: Number of all images on this node
+    name: DESIRED
+    type: integer
+  - JSONPath: .status.pulling
+    description: Number of image pull task active
+    name: PULLING
+    type: integer
+  - JSONPath: .status.succeeded
+    description: Number of image pull task succeeded
+    name: SUCCEED
+    type: integer
+  - JSONPath: .status.failed
+    description: Number of image pull tasks failed
+    name: FAILED
+    type: integer
+  - JSONPath: .metadata.creationTimestamp
+    description: CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+    name: AGE
+    type: date
+  group: apps.kruise.io
+  names:
+    kind: NodeImage
+    listKind: NodeImageList
+    plural: nodeimages
+    singular: nodeimage
+  scope: Cluster
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: NodeImage is the Schema for the nodeimages API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: NodeImageSpec defines the desired state of NodeImage
+          properties:
+            images:
+              additionalProperties:
+                description: ImageSpec defines the pulling spec of an image
+                properties:
+                  pullSecrets:
+                    description: PullSecrets is an optional list of references to secrets in the same namespace to use for pulling the image. If specified, these secrets will be passed to individual puller implementations for them to use.  For example, in the case of docker, only DockerConfig type secrets are honored.
+                    items:
+                      description: ReferenceObject comprises a resource name, with a mandatory namespace, rendered as "<namespace>/<name>".
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      type: object
+                    type: array
+                  tags:
+                    description: Tags is a list of versions of this image
+                    items:
+                      description: ImageTagSpec defines the pulling spec of an image tag
+                      properties:
+                        createdAt:
+                          description: Specifies the create time of this tag
+                          format: date-time
+                          type: string
+                        ownerReferences:
+                          description: List of objects depended by this object. If this image is managed by a controller, then an entry in this list will point to this controller.
+                          items:
+                            description: 'ObjectReference contains enough information to let you inspect or modify the referred object. --- New uses of this type are discouraged because of difficulty describing its usage when embedded in APIs.  1. Ignored fields.  It includes many fields which are not generally honored.  For instance, ResourceVersion and FieldPath are both very rarely valid in actual usage.  2. Invalid usage help.  It is impossible to add specific help for individual usage.  In most embedded usages, there are particular     restrictions like, "must refer only to types A and B" or "UID not honored" or "name must be restricted".     Those cannot be well described when embedded.  3. Inconsistent validation.  Because the usages are different, the validation rules are different by usage, which makes it hard for users to predict what will happen.  4. The fields are both imprecise and overly precise.  Kind is not a precise mapping to a URL. This can produce ambiguity     during interpretation and require a REST mapping.  In most cases, the dependency is on the group,resource tuple     and the version of the actual struct is irrelevant.  5. We cannot easily change it.  Because this type is embedded in many locations, updates to this type     will affect numerous schemas.  Don''t make new APIs embed an underspecified API type they do not control. Instead of using this type, create a locally provided and used type that is well-focused on your reference. For example, ServiceReferences for admission registration: https://github.com/kubernetes/api/blob/release-1.17/admissionregistration/v1/types.go#L533 .'
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          type: array
+                        pullPolicy:
+                          description: PullPolicy is an optional field to set parameters of the pulling task. If not specified, the system will use the default values.
+                          properties:
+                            activeDeadlineSeconds:
+                              description: ActiveDeadlineSeconds specifies the duration in seconds relative to the startTime that the task may be active before the system tries to terminate it; value must be positive integer. if not specified, the system will never terminate it.
+                              format: int64
+                              type: integer
+                            backoffLimit:
+                              description: Specifies the number of retries before marking the pulling task failed. Defaults to 3
+                              format: int32
+                              type: integer
+                            timeoutSeconds:
+                              description: Specifies the timeout of the pulling task. Defaults to 600
+                              format: int32
+                              type: integer
+                            ttlSecondsAfterFinished:
+                              description: TTLSecondsAfterFinished limits the lifetime of a pulling task that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the task finishes, it is eligible to be automatically deleted. If this field is unset, the task won't be automatically deleted. If this field is set to zero, the task becomes eligible to be deleted immediately after it finishes.
+                              format: int32
+                              type: integer
+                          type: object
+                        tag:
+                          description: Specifies the image tag
+                          type: string
+                        version:
+                          description: "An opaque value that represents the internal version of this tag that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. \n Populated by the system. Read-only. Value must be treated as opaque by clients and ."
+                          format: int64
+                          type: integer
+                      required:
+                      - tag
+                      type: object
+                    type: array
+                required:
+                - tags
+                type: object
+              description: Specifies images to be pulled on this node It can not be more than 256 for each NodeImage
+              type: object
+          type: object
+        status:
+          description: NodeImageStatus defines the observed state of NodeImage
+          properties:
+            desired:
+              description: The desired number of pulling tasks, this is typically equal to the number of images in spec.
+              format: int32
+              type: integer
+            failed:
+              description: The number of pulling tasks  which reached phase Failed.
+              format: int32
+              type: integer
+            firstSyncStatus:
+              description: The first of all job has finished on this node. When a node is added to the cluster, we want to know the time when the node's image pulling is completed, and use it to trigger the operation of the upper system.
+              properties:
+                message:
+                  type: string
+                status:
+                  description: SyncStatusPhase defines the node status
+                  type: string
+                syncAt:
+                  format: date-time
+                  type: string
+              type: object
+            imageStatuses:
+              additionalProperties:
+                description: ImageStatus defines the pulling status of an image
+                properties:
+                  tags:
+                    description: Represents statuses of pulling tasks on this node
+                    items:
+                      description: ImageTagStatus defines the pulling status of an image tag
+                      properties:
+                        completionTime:
+                          description: Represents time when the pulling task was completed. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+                          format: date-time
+                          type: string
+                        imageID:
+                          description: Represents the ID of this image.
+                          type: string
+                        message:
+                          description: Represents the summary informations of this node
+                          type: string
+                        phase:
+                          description: Represents the image pulling task phase.
+                          type: string
+                        progress:
+                          description: Represents the pulling progress of this tag, which is beetween 0-100. There is no guarantee of monotonic consistency, and it may be a rollback due to retry during pulling.
+                          format: int32
+                          type: integer
+                        startTime:
+                          description: Represents time when the pulling task was acknowledged by the image puller. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC.
+                          format: date-time
+                          type: string
+                        tag:
+                          description: Represents the image tag.
+                          type: string
+                        version:
+                          description: Represents the internal version of this tag that the daemon handled.
+                          format: int64
+                          type: integer
+                      required:
+                      - phase
+                      - tag
+                      type: object
+                    type: array
+                required:
+                - tags
+                type: object
+              description: all statuses of active image pulling tasks
+              type: object
+            pulling:
+              description: The number of pulling tasks which are not finished.
+              format: int32
+              type: integer
+            succeeded:
+              description: The number of pulling tasks which reached phase Succeeded.
+              format: int32
+              type: integer
+          required:
+          - desired
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
 # Source: kruise/templates/rbac_role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -1154,6 +1935,44 @@ webhooks:
     service:
       name: kruise-webhook-service
       namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-advancedcronjob
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: madvancedcronjob.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - advancedcronjobs
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-broadcastjob
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: mbroadcastjob.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - broadcastjobs
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
       path: /mutate-apps-kruise-io-v1alpha1-cloneset
   failurePolicy: Fail
   timeoutSeconds: 30
@@ -1168,7 +1987,163 @@ webhooks:
     - UPDATE
     resources:
     - clonesets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-containerrecreaterequest
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: mcontainerrecreaterequest.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - containerrecreaterequests
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-daemonset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: mdaemonset.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - daemonsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-imagepulljob
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: mimagepulljob.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - imagepulljobs
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-nodeimage
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: mnodeimage.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - nodeimages
 
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-pod
+  failurePolicy: Ignore
+  timeoutSeconds: 30
+  name: mpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: control-plane
+      operator: DoesNotExist
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-sidecarset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: msidecarset.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - sidecarsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-statefulset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: mstatefulset.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - statefulsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /mutate-apps-kruise-io-v1alpha1-uniteddeployment
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: muniteddeployment.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - uniteddeployments
 ---
 # Source: kruise/templates/webhookconfiguration.yaml
 apiVersion: admissionregistration.k8s.io/v1beta1
@@ -1179,6 +2154,110 @@ metadata:
   annotations:
     template: ""
 webhooks:
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-advancedcronjob
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vadvancedcronjob.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - advancedcronjobs
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-broadcastjob
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vbroadcastjob.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - broadcastjobs
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-deployment
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vbuiltindeployment.kb.io
+  objectSelector:
+    matchExpressions:
+    - key: policy.kruise.io/delete-protection
+      operator: Exists
+  rules:
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - DELETE
+    resources:
+    - deployments
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-replicaset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vbuiltinreplicaset.kb.io
+  objectSelector:
+    matchExpressions:
+    - key: policy.kruise.io/delete-protection
+      operator: Exists
+  rules:
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - DELETE
+    resources:
+    - replicasets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-statefulset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vbuiltinstatefulset.kb.io
+  objectSelector:
+    matchExpressions:
+    - key: policy.kruise.io/delete-protection
+      operator: Exists
+  rules:
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - DELETE
+    resources:
+    - statefulsets
 - clientConfig:
     caBundle: Cg==
     service:
@@ -1199,3 +2278,201 @@ webhooks:
     - DELETE
     resources:
     - clonesets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-customresourcedefinition
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vcustomresourcedefinition.kb.io
+  objectSelector:
+    matchExpressions:
+    - key: policy.kruise.io/delete-protection
+      operator: Exists
+  rules:
+  - apiGroups:
+    - apiextensions.k8s.io
+    apiVersions:
+    - v1
+    - v1beta1
+    operations:
+    - DELETE
+    resources:
+    - customresourcedefinitions
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-daemonset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vdaemonset.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - daemonsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-imagepulljob
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vimagepulljob.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - imagepulljobs
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-namespace
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vnamespace.kb.io
+  objectSelector:
+    matchExpressions:
+    - key: policy.kruise.io/delete-protection
+      operator: Exists
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - DELETE
+    resources:
+    - namespaces
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-nodeimage
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vnodeimage.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - nodeimages
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-policy-kruise-io-podunavailablebudget
+  failurePolicy: Fail
+  name: vpodunavailablebudget.kb.io
+  rules:
+  - apiGroups:
+    - policy.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - podunavailablebudgets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-sidecarset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vsidecarset.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - sidecarsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-statefulset
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vstatefulset.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - statefulsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-uniteddeployment
+  failurePolicy: Fail
+  timeoutSeconds: 30
+  name: vuniteddeployment.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - uniteddeployments
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: kruise-webhook-service
+      namespace: kruise-system
+      path: /validate-apps-kruise-io-v1alpha1-workloadspread
+  failurePolicy: Fail
+  name: vworkloadspread.kb.io
+  rules:
+  - apiGroups:
+    - apps.kruise.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - workloadspreads
