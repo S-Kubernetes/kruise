@@ -2,21 +2,26 @@ apiVersion: apps.kruise.io/v1alpha1
 kind: CloneSet
 metadata:
   labels:
-    app: sample
-  name: sample
+    app: demo-clone
+  name: demo-clone
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: sample
-  template:
+      app: nginx
+  template: #Pod template和Deployment的结构完全一致。
     metadata:
       labels:
-        app: sample
+        app: nginx
     spec:
       containers:
-      - name: main
-        image: nginx:alpine
+        - name: nginx
+          image: nginx:1.12
+          ports:
+            - containerPort: 80
   updateStrategy:
-    type: InPlaceIfPossible
-    maxUnavailable: 2
+    partition: 4
+    type: InPlaceIfPossible     #尽量使用原地升级，否则重建升级。
+    maxUnavailable: 5
+    inPlaceUpdateStrategy:
+      gracePeriodSeconds: 10   #每个Pod原地升级前Not Ready优雅等待时间。

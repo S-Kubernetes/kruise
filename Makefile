@@ -96,3 +96,7 @@ endif
 push:
 	docker build -t "harbor.test.shopeemobile.com/shopee/openkruise:0.10.1" .
 	docker push  "harbor.test.shopeemobile.com/shopee/openkruise:0.10.1"
+
+live-push:
+	docker build -t "harbor.shopeemobile.com/shopee/openkruise:0.10.1" .
+	docker push  "harbor.shopeemobile.com/shopee/openkruise:0.10.1"

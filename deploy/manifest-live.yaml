@@ -18,22 +18,21 @@ metadata:
 # Test Env Exclusive：secret that connect harbor-test image repository
 apiVersion: v1
 data:
-  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2hhcmJvci50ZXN0LnNob3BlZW1vYmlsZS5jb20vIjp7InVzZXJuYW1lIjoic2hvcGVlLWplbmtpbnMiLCJwYXNzd29yZCI6ImI5Y2RkNTI3YTQ4ZEMyYjQiLCJhdXRoIjoiYzJodmNHVmxMV3BsYm10cGJuTTZZamxqWkdRMU1qZGhORGhrUXpKaU5BPT0ifX19
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2hhcmJvci5zaG9wZWVtb2JpbGUuY29tLyI6eyJ1c2VybmFtZSI6InNob3BlZS1qZW5raW5zIiwicGFzc3dvcmQiOiJKYXZhMTIzRnVja2VyIiwiYXV0aCI6ImMyaHZjR1ZsTFdwbGJtdHBibk02U21GMllURXlNMFoxWTJ0bGNnPT0ifX19
 kind: Secret
 metadata:
   managedFields:
-  - apiVersion: v1
-    fieldsType: FieldsV1
-    fieldsV1:
-      f:data:
-        .: {}
-        f:.dockerconfigjson: {}
-      f:type: {}
-    manager: kubectl-create
-    operation: Update
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:data:
+          .: {}
+          f:.dockerconfigjson: {}
+        f:type: {}
+      manager: kubectl-create
+      operation: Update
   name: docker-harbor-registry
   namespace: kruise-system
-  uid: f546ee4c-f8cf-4e9f-b795-c9e322224b8d
 type: kubernetes.io/dockerconfigjson
 ---
 # Source: kruise/templates/manager.yaml
@@ -4163,7 +4162,7 @@ spec:
         - --logtostderr=true
         - --v=4
         - --addr=:10221
-        image: harbor.test.shopeemobile.com/shopee/openkruise:0.10.1
+        image: harbor.shopeemobile.com/shopee/openkruise:0.10.1
         imagePullPolicy: Always
         name: daemon
         env:
@@ -4241,7 +4240,7 @@ spec:
             - --feature-gates=CloneSetShortHash=true,CloneSetPartitionRollback=true
           command:
             - /manager
-          image: harbor.test.shopeemobile.com/shopee/openkruise:0.10.1
+          image: harbor.shopeemobile.com/shopee/openkruise:0.10.1
           imagePullPolicy: Always
           name: manager
           env:
