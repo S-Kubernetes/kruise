@@ -15,7 +15,7 @@ metadata:
   namespace: kruise-system
 ---
 # Source: kruise/templates/manager.yaml
-# Test Env Exclusive：secret that connect harbor-test image repository
+# Test Env Exclusive:secret that connect harbor-test image repository
 apiVersion: v1
 data:
   .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2hhcmJvci5zaG9wZWVtb2JpbGUuY29tLyI6eyJ1c2VybmFtZSI6InNob3BlZS1qZW5raW5zIiwicGFzc3dvcmQiOiJKYXZhMTIzRnVja2VyIiwiYXV0aCI6ImMyaHZjR1ZsTFdwbGJtdHBibk02U21GMllURXlNMFoxWTJ0bGNnPT0ifX19

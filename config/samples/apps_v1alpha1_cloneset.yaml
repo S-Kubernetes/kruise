@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  template: #Pod template和Deployment的结构完全一致。
+  template: #Pod template's structure is the absolute same with Deployment
     metadata:
       labels:
         app: nginx
@@ -21,7 +21,7 @@ spec:
             - containerPort: 80
   updateStrategy:
     partition: 4
-    type: InPlaceIfPossible     #尽量使用原地升级，否则重建升级。
+    type: InPlaceIfPossible     # Use In-Place strategy as possible, otherwise use recreate
     maxUnavailable: 5
     inPlaceUpdateStrategy:
-      gracePeriodSeconds: 10   #每个Pod原地升级前Not Ready优雅等待时间。
+      gracePeriodSeconds: 10   # Grace wait time before each pod not ready
