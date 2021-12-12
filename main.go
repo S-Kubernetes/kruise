@@ -74,6 +74,7 @@ func main() {
 	var enableLeaderElection, enablePprof, allowPrivileged bool
 	var leaderElectionNamespace string
 	var namespace string
+	var controllers string
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&healthProbeAddr, "health-probe-addr", ":8000", "The address the healthz/readyz endpoint binds to.")
 	flag.BoolVar(&allowPrivileged, "allow-privileged", true, "If true, allow privileged containers. It will only work if api-server is also"+
@@ -85,6 +86,7 @@ func main() {
 		"Namespace if specified restricts the manager's cache to watch objects in the desired namespace. Defaults to all namespaces.")
 	flag.BoolVar(&enablePprof, "enable-pprof", false, "Enable pprof for controller manager.")
 	flag.StringVar(&pprofAddr, "pprof-addr", ":8090", "The address the pprof binds to.")
+	flag.StringVar(&controllers, "controllers", "", "The target controllers manager will start.")
 
 	utilfeature.DefaultMutableFeatureGate.AddFlag(pflag.CommandLine)
 	klog.InitFlags(nil)
@@ -166,8 +168,14 @@ func main() {
 			os.Exit(1)
 		}
 
+		// once "controllers" parameter is specified, kruise-manager will be set up with specified ones
 		setupLog.Info("setup controllers")
-		if err = controller.SetupWithManager(mgr); err != nil {
+		if controllers != "" {
+			err = controller.SetupWithManagerWithControllers(mgr, controllers)
+		} else {
+			err = controller.SetupWithManager(mgr)
+		}
+		if err != nil {
 			setupLog.Error(err, "unable to setup controllers")
 			os.Exit(1)
 		}
